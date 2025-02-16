@@ -13,3 +13,7 @@
 
 - using os.Stdin
     - details on using bufio.NewScanner to read from os.Stdin, and how os.Stdin is just a file like every other file in the unix system. Because it is just a file, like every other File it has the Read method attached to it and so fulfils the io.Reader interface that must be passed into bufio.NewScanner as an argument
+
+- getting arguments from command line arguments
+
+- understanding how messages from programs can be written to either the stdout or stderror streams, and how each of these streams can be captured and their output can be written to files
