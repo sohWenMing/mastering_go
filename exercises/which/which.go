@@ -2,37 +2,74 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 )
 
 func main() {
-	rootDir, err := openDir("/")
-	if err != nil {
-		log.Fatal(err)
+	args := os.Args
+	if len(args) == 1 {
+		fmt.Println("no arguments passed into which program, exiting program")
+		os.Exit(0)
 	}
-	fmt.Printf("val in rootDir %v\n", rootDir)
+	if len(args) > 2 {
+		fmt.Println("which program only accepts one filename, program terminating")
+		os.Exit(1)
+	}
+	searchString := os.Args[1]
+	fmt.Printf("search string entered: %s\n", searchString)
+	foundPaths, err := openPathForReading("/", searchString)
+	if err != nil {
+		fmt.Println("error returned from program", err.Error())
+		os.Exit(1)
+	}
+	for i, path := range foundPaths {
+		fmt.Printf("found result %d: %s\n", i, path)
+	}
+	os.Exit(0)
 }
 
-func openDir(path string) (*os.Root, error) {
-	err := checkIsDir(path)
-	if err != nil {
-		return nil, err
-	}
-	root, err := os.OpenRoot(path)
-	if err != nil {
-		return nil, err
-	}
-	return root, nil
-}
+func openPathForReading(path string, searchString string) (foundPaths []string, err error) {
+	foundPaths = []string{}
+	//init foundPaths to an empty slice before doing anything else
 
-func checkIsDir(path string) (err error) {
 	info, err := os.Stat(path)
 	if err != nil {
-		return err
+		{
+			return foundPaths, err
+		}
+		// if os.Stat returns an error, then there should be no foundPaths to return, just return empty slice and the assigned error
 	}
-	if !info.IsDir() {
-		return fmt.Errorf("path specified is not a directory %s", path)
+	name := info.Name()
+	switch info.IsDir() {
+
+	case false:
+		evalPath := fmt.Sprintf("%s/%s", path, name)
+		if name == searchString {
+			foundPaths = append(foundPaths, evalPath)
+		}
+		//only if the name of the file matches the searchString, then append it to foundPaths
+
+	case true:
+		entriesInDir, err := os.ReadDir(path)
+		if err != nil {
+			return foundPaths, err
+		}
+		for _, entryInDir := range entriesInDir {
+			evalPath := fmt.Sprintf("%s/%s", path, entryInDir.Name())
+			if !entryInDir.IsDir() {
+				if entryInDir.Name() == searchString {
+					foundPaths = append(foundPaths, evalPath)
+				}
+				continue
+			} else {
+				foundPathsFromSearch, err := openPathForReading(evalPath, searchString)
+				if err != nil {
+					continue
+				}
+				foundPaths = append(foundPaths, foundPathsFromSearch...)
+
+			}
+		}
 	}
-	return nil
+	return foundPaths, nil
 }
