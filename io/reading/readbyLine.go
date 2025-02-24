@@ -8,11 +8,11 @@ import (
 )
 
 func ReadFileByLine(fileName string) (err error) {
-	file, err := os.Open(fileName)
+	fmt.Printf("filename entered: %s\n", fileName)
+	file, err := openFile(fileName)
 	if err != nil {
 		return err
 	}
-
 	defer file.Close()
 	//always defer closing of the file, unless the file still needs to be accessed outside of the function
 
@@ -27,4 +27,12 @@ func ReadFileByLine(fileName string) (err error) {
 		fmt.Println(line)
 	}
 	return nil
+}
+
+func openFile(fileName string) (*os.File, error) {
+	file, err := os.Open(fileName)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
 }

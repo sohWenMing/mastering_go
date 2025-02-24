@@ -19,6 +19,9 @@ func main() {
 		fmt.Println("flag for action is required, usage: readOrWrite -action=<read|write>")
 		os.Exit(1)
 	}
+
+	fileNameVal := *fileName
+	fmt.Printf("dereferenced fileName: %s", fileNameVal)
 	// user entering either "read" or "write" is required, if none should early exit
 	switch enteredAction {
 	case "read":
