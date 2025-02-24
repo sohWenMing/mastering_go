@@ -17,3 +17,7 @@
 - getting arguments from command line arguments
 
 - understanding how messages from programs can be written to either the stdout or stderror streams, and how each of these streams can be captured and their output can be written to files
+
+- networking information in go
+    - how to lookup certain network related values in Go, and also how this can help you understand certain network configurations
+    - how to write servers in Go
